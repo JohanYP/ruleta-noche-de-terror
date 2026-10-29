@@ -1,0 +1,117 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@font-face {
+  font-family: 'Scaryring';
+  src: url('/fonts/Scaryring.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root {
+  font-family: 'Scaryring', 'Inter', -apple-system, sans-serif;
+  color-scheme: dark;
+  -webkit-tap-highlight-color: transparent;
+  --ios-spring: cubic-bezier(0.18, 0.89, 0.32, 1.28);
+}
+
+body {
+  background-color: #060607;
+  color: #f1f1f1;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  font-family: 'Scaryring', sans-serif;
+}
+
+/* Scaryring official font classes */
+.font-scary {
+  font-family: 'Scaryring', sans-serif;
+  letter-spacing: 0.05em;
+}
+
+.font-num {
+  font-family: 'Scaryring', 'JetBrains Mono', monospace;
+  font-feature-settings: "tnum" 1, "zero" 1;
+  letter-spacing: 0.08em;
+}
+
+/* Realistic Torn Paper Ticket Effect using Pure CSS clip-path & texture overlay */
+.torn-ticket {
+  background: #f4f0ea;
+  color: #0f0f10;
+  clip-path: polygon(
+    0% 3px, 2% 0px, 5% 4px, 8% 1px, 11% 5px, 14% 0px, 18% 4px, 22% 1px, 26% 5px, 30% 0px,
+    34% 4px, 38% 1px, 42% 5px, 46% 0px, 50% 4px, 54% 1px, 58% 5px, 62% 0px, 66% 4px, 70% 1px,
+    74% 5px, 78% 0px, 82% 4px, 86% 1px, 90% 5px, 94% 0px, 97% 4px, 100% 1px,
+    100% 98%, 98% 100%, 95% 96%, 91% 99%, 87% 96%, 83% 100%, 79% 96%, 75% 99%, 71% 96%,
+    67% 100%, 63% 96%, 59% 99%, 55% 96%, 51% 100%, 47% 96%, 43% 99%, 39% 96%, 35% 100%,
+    31% 96%, 27% 99%, 23% 96%, 19% 100%, 15% 96%, 11% 99%, 7% 96%, 3% 100%, 0% 97%
+  );
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7);
+}
+
+.torn-ticket-dark {
+  background: #111114;
+  color: #ffffff;
+  clip-path: polygon(
+    0% 2px, 3% 0px, 6% 3px, 10% 1px, 14% 4px, 18% 0px, 22% 3px, 26% 1px, 30% 4px,
+    34% 0px, 38% 3px, 42% 1px, 46% 4px, 50% 0px, 54% 3px, 58% 1px, 62% 4px, 66% 0px,
+    70% 3px, 74% 1px, 78% 4px, 82% 0px, 86% 3px, 90% 1px, 94% 4px, 97% 0px, 100% 2px,
+    100% 98%, 97% 100%, 94% 97%, 90% 100%, 86% 97%, 82% 100%, 78% 97%, 74% 100%, 70% 97%,
+    66% 100%, 62% 97%, 58% 100%, 54% 97%, 50% 100%, 46% 97%, 42% 100%, 38% 97%, 34% 100%,
+    30% 97%, 26% 100%, 22% 97%, 18% 100%, 14% 97%, 10% 100%, 6% 97%, 3% 100%, 0% 98%
+  );
+}
+
+/* Paper Grain Overlay */
+.paper-texture {
+  background-image: radial-gradient(#000 0.75px, transparent 0.75px);
+  background-size: 8px 8px;
+  opacity: 0.08;
+}
+
+/* Tactile press response */
+.ios-press {
+  transition: transform 0.16s cubic-bezier(0.32, 0.72, 0, 1), filter 0.16s ease;
+  will-change: transform;
+}
+.ios-press:active {
+  transform: scale(0.96);
+  filter: brightness(0.92);
+}
+
+/* Center laser line */
+@keyframes laserPulse {
+  0%, 100% {
+    opacity: 0.85;
+    box-shadow: 0 0 16px rgba(230, 0, 0, 0.9), 0 0 32px rgba(230, 0, 0, 0.5);
+  }
+  50% {
+    opacity: 1;
+    box-shadow: 0 0 24px rgba(255, 20, 20, 1), 0 0 45px rgba(255, 20, 20, 0.7);
+  }
+}
+
+.animate-laser {
+  animation: laserPulse 1.2s infinite ease-in-out;
+}
+
+@keyframes winnerPop {
+  0% {
+    transform: scale(0.7) translateY(20px);
+    opacity: 0;
+  }
+  60% {
+    transform: scale(1.04) translateY(-3px);
+  }
+  100% {
+    transform: scale(1) translateY(0);
+    opacity: 1;
+  }
+}
+
+.animate-winner {
+  animation: winnerPop 0.5s cubic-bezier(0.18, 0.89, 0.32, 1.28) forwards;
+}
