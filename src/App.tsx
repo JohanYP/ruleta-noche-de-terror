@@ -56,7 +56,7 @@ export default function App() {
       {/* 100% Original, Clean & Bright Background Graphic (No darkening, no heavy vignettes) */}
       <div className="absolute inset-0 z-0 pointer-events-none select-none overflow-hidden">
         <img
-          src="/bg-noche-de-terror.jpg"
+          src={`${import.meta.env.BASE_URL}bg-noche-de-terror.jpg`}
           alt="Noche de Terror Background"
           className="w-full h-full object-cover object-center"
         />

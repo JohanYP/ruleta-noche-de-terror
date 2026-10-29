@@ -4,7 +4,8 @@
 
 @font-face {
   font-family: 'Scaryring';
-  src: url('/fonts/Scaryring.otf') format('opentype');
+  src: url('/ruleta-noche-de-terror/fonts/Scaryring.otf') format('opentype'),
+       url('./fonts/Scaryring.otf') format('opentype');
   font-weight: normal;
   font-style: normal;
   font-display: swap;

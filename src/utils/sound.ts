@@ -26,9 +26,10 @@ class SoundFX {
     if (this.isLoaded || !this.ctx) return;
     this.isLoaded = true;
     try {
+      const base = import.meta.env.BASE_URL || '/';
       const [tickRes, winnerRes] = await Promise.all([
-        fetch('/audio/horror-tick.wav'),
-        fetch('/audio/horror-winner.wav')
+        fetch(`${base}audio/horror-tick.wav`),
+        fetch(`${base}audio/horror-winner.wav`)
       ]);
       const tickData = await tickRes.arrayBuffer();
       const winnerData = await winnerRes.arrayBuffer();

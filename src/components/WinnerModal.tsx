@@ -18,7 +18,7 @@ export const WinnerModal: FC<WinnerModalProps> = ({ winner, onClose, onSpinAgain
         <div className="relative w-full aspect-[16/9] rounded-3xl overflow-hidden border border-red-600/40 shadow-[0_0_120px_rgba(216,0,0,0.65)] animate-winner select-none">
           {/* Background Ticket Image */}
           <img
-            src="/winner-ticket-bg.jpg"
+            src={`${import.meta.env.BASE_URL}winner-ticket-bg.jpg`}
             alt="Boleto Ganador Noche de Terror"
             className="absolute inset-0 w-full h-full object-cover object-center pointer-events-none"
           />
