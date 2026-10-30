@@ -4,18 +4,21 @@
 
 @font-face {
   font-family: 'Scaryring';
-  src: url('/ruleta-noche-de-terror/fonts/Scaryring.otf') format('opentype'),
-       url('./fonts/Scaryring.otf') format('opentype');
+  src: url('./assets/fonts/Scaryring.otf') format('opentype');
   font-weight: normal;
   font-style: normal;
   font-display: swap;
 }
 
 :root {
-  font-family: 'Scaryring', 'Inter', -apple-system, sans-serif;
   color-scheme: dark;
   -webkit-tap-highlight-color: transparent;
-  --ios-spring: cubic-bezier(0.18, 0.89, 0.32, 1.28);
+  --blood: #d80000;
+  --blood-hot: #ff1a1a;
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-spring: cubic-bezier(0.18, 0.89, 0.32, 1.28);
+  /* 0..1, written every frame by the roulette while it slows down */
+  --tension: 0;
 }
 
 body {
@@ -23,23 +26,78 @@ body {
   color: #f1f1f1;
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
-  font-family: 'Scaryring', sans-serif;
+  font-family: 'Scaryring', system-ui, -apple-system, sans-serif;
 }
 
-/* Scaryring official font classes */
 .font-scary {
   font-family: 'Scaryring', sans-serif;
   letter-spacing: 0.05em;
 }
 
-.font-num {
-  font-family: 'Scaryring', 'JetBrains Mono', monospace;
-  font-feature-settings: "tnum" 1, "zero" 1;
-  letter-spacing: 0.08em;
+/* ───────────── Background ───────────── */
+
+.poster-bg {
+  animation: posterBreath 26s ease-in-out infinite alternate;
+  transform-origin: 50% 35%;
+  will-change: transform;
 }
 
-/* Realistic Torn Paper Ticket Effect using Pure CSS clip-path & texture overlay */
-.torn-ticket {
+@keyframes posterBreath {
+  from { transform: scale(1); }
+  to   { transform: scale(1.045); }
+}
+
+.poster-fade {
+  background: linear-gradient(to top, rgba(6, 6, 7, 0.55), transparent);
+}
+
+.tension-overlay {
+  background:
+    radial-gradient(ellipse 70% 55% at 50% 72%, transparent 25%, rgba(0, 0, 0, 0.88) 100%),
+    radial-gradient(ellipse at 50% 72%, rgba(216, 0, 0, 0.18), transparent 60%);
+  opacity: calc(var(--tension) * 0.95);
+  transition: opacity 0.35s linear;
+}
+
+/* Stage entrance */
+.stage-enter {
+  animation: stageIn 0.9s var(--ease-out) both;
+}
+
+@keyframes stageIn {
+  from { opacity: 0; transform: translateY(28px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ───────────── Roulette ───────────── */
+
+/* Tickets fade into the poster at both edges */
+.roulette-viewport {
+  -webkit-mask-image: linear-gradient(to right, transparent, #000 16%, #000 84%, transparent);
+  mask-image: linear-gradient(to right, transparent, #000 16%, #000 84%, transparent);
+}
+
+.roulette-slot {
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform-origin: 50% 50%;
+  will-change: transform;
+  --focus: 0;
+}
+
+.ticket {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+/* Torn paper edges */
+.roulette-slot[data-tone='light'] .ticket {
   background: #f4f0ea;
   color: #0f0f10;
   clip-path: polygon(
@@ -50,10 +108,9 @@ body {
     67% 100%, 63% 96%, 59% 99%, 55% 96%, 51% 100%, 47% 96%, 43% 99%, 39% 96%, 35% 100%,
     31% 96%, 27% 99%, 23% 96%, 19% 100%, 15% 96%, 11% 99%, 7% 96%, 3% 100%, 0% 97%
   );
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7);
 }
 
-.torn-ticket-dark {
+.roulette-slot[data-tone='dark'] .ticket {
   background: #111114;
   color: #ffffff;
   clip-path: polygon(
@@ -66,24 +123,146 @@ body {
   );
 }
 
-/* Paper Grain Overlay */
+.ticket-number {
+  position: relative;
+  z-index: 1;
+  font-size: 1em;
+  line-height: 1;
+  font-weight: 900;
+  letter-spacing: 0.06em;
+}
+
+.roulette-slot[data-tone='light'] .ticket-number { color: #0f0f10; }
+.roulette-slot[data-tone='dark'] .ticket-number {
+  color: #fff;
+  text-shadow: 0 3px 15px rgba(216, 0, 0, 0.7);
+}
+
+.ticket-serial,
+.ticket-barcode {
+  position: absolute;
+  font-family: ui-monospace, Menlo, monospace;
+  font-weight: 700;
+}
+
+.ticket-serial {
+  top: 8px;
+  left: 8px;
+  font-size: 10px;
+  letter-spacing: 0.15em;
+}
+
+.ticket-barcode {
+  bottom: 8px;
+  right: 8px;
+  font-size: 9px;
+  letter-spacing: -0.05em;
+}
+
+.roulette-slot[data-tone='light'] .ticket-serial  { color: rgba(0, 0, 0, 0.4); }
+.roulette-slot[data-tone='light'] .ticket-barcode { color: rgba(0, 0, 0, 0.3); }
+.roulette-slot[data-tone='dark'] .ticket-serial   { color: rgba(255, 255, 255, 0.3); }
+.roulette-slot[data-tone='dark'] .ticket-barcode  { color: rgba(255, 255, 255, 0.2); }
+
+/* Red halo behind the ticket under the needle (opacity is cheap to update per frame) */
+.ticket-glow {
+  position: absolute;
+  inset: 4px;
+  border-radius: 6px;
+  box-shadow: 0 0 34px 8px rgba(255, 20, 20, 0.85), 0 0 80px 20px rgba(216, 0, 0, 0.35);
+  opacity: var(--focus);
+  pointer-events: none;
+}
+
 .paper-texture {
+  position: absolute;
+  inset: 0;
   background-image: radial-gradient(#000 0.75px, transparent 0.75px);
   background-size: 8px 8px;
   opacity: 0.08;
+  pointer-events: none;
 }
 
-/* Tactile press response */
-.ios-press {
-  transition: transform 0.16s cubic-bezier(0.32, 0.72, 0, 1), filter 0.16s ease;
-  will-change: transform;
+/* Winning ticket once the wheel stops */
+.roulette-slot.is-winner .ticket-glow {
+  animation: winnerGlow 0.45s ease-in-out infinite alternate;
 }
-.ios-press:active {
-  transform: scale(0.96);
-  filter: brightness(0.92);
+.roulette-slot.is-winner .ticket {
+  animation: winnerThump 0.55s var(--ease-spring) both;
 }
 
-/* Center laser line */
+@keyframes winnerGlow {
+  from { opacity: 0.7; transform: scale(1); }
+  to   { opacity: 1;   transform: scale(1.06); }
+}
+
+@keyframes winnerThump {
+  0%   { transform: scale(1); }
+  35%  { transform: scale(1.12); }
+  100% { transform: scale(1.04); }
+}
+
+/* Live readout above the needle */
+.live-readout {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.6rem;
+  padding: 0.35rem 1.4rem 0.45rem;
+  border-radius: 999px;
+  background: rgba(10, 0, 0, 0.55);
+  border: 1px solid rgba(255, 40, 40, calc(0.3 + var(--tension) * 0.6));
+  box-shadow: 0 0 calc(18px + var(--tension) * 40px) rgba(216, 0, 0, calc(0.35 + var(--tension) * 0.55));
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+}
+
+.live-readout-label {
+  font-family: ui-monospace, Menlo, monospace;
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.2em;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.live-readout-value {
+  display: inline-block;
+  min-width: 4ch;
+  font-family: 'Scaryring', sans-serif;
+  font-size: clamp(1.9rem, 3.4vw, 2.9rem);
+  line-height: 1;
+  letter-spacing: 0.1em;
+  color: #fff;
+  text-shadow: 0 0 18px rgba(255, 30, 30, 0.9);
+  font-variant-numeric: tabular-nums;
+}
+
+.is-stopped .live-readout-value {
+  color: var(--blood-hot);
+}
+
+/* Needle */
+.needle-arrow {
+  width: 0;
+  height: 0;
+  border-left: 13px solid transparent;
+  border-right: 13px solid transparent;
+  filter: drop-shadow(0 0 14px rgba(216, 0, 0, 1));
+}
+.needle-arrow-top    { border-top: 22px solid var(--blood); }
+.needle-arrow-bottom { border-bottom: 22px solid var(--blood); }
+
+.needle-line {
+  width: 3px;
+  height: 100%;
+  background: var(--blood);
+  transform: scaleX(calc(1 + var(--tension) * 0.8));
+  animation: laserPulse 1.2s infinite ease-in-out;
+}
+
+.is-stopped .needle-line {
+  animation: laserPulse 0.25s infinite ease-in-out;
+}
+
 @keyframes laserPulse {
   0%, 100% {
     opacity: 0.85;
@@ -95,24 +274,276 @@ body {
   }
 }
 
-.animate-laser {
-  animation: laserPulse 1.2s infinite ease-in-out;
+/* ───────────── Controls ───────────── */
+
+.ios-press {
+  transition: transform 0.18s var(--ease-out), filter 0.18s ease, background-color 0.25s ease, box-shadow 0.3s ease, opacity 0.25s ease;
+  will-change: transform;
+}
+.ios-press:active:not(:disabled) {
+  transform: scale(0.95);
+  filter: brightness(0.92);
+}
+
+.glass-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  color: #fff;
+  background: rgba(216, 0, 0, 0.28);
+  border: 2px solid rgba(239, 68, 68, 0.6);
+  box-shadow: 0 0 30px rgba(216, 0, 0, 0.6);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+}
+.glass-btn:hover:not(:disabled) {
+  background: rgba(216, 0, 0, 0.5);
+  box-shadow: 0 0 55px rgba(255, 20, 20, 0.95);
+}
+.glass-btn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.settings-trigger {
+  background: rgba(0, 0, 0, 0.45);
+  border-color: rgba(255, 255, 255, 0.18);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
+}
+.settings-trigger svg {
+  transition: transform 0.6s var(--ease-out);
+}
+.settings-trigger:hover:not(:disabled) svg,
+.settings-trigger.is-open svg {
+  transform: rotate(90deg);
+}
+
+.glass-panel {
+  background: rgba(14, 10, 11, 0.78);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.7), 0 0 0 1px rgba(216, 0, 0, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(24px) saturate(140%);
+  -webkit-backdrop-filter: blur(24px) saturate(140%);
+}
+
+.settings-panel {
+  position: absolute;
+  top: calc(100% + 12px);
+  right: 0;
+  width: min(20rem, calc(100vw - 1.5rem));
+  padding: 1.25rem;
+  border-radius: 1.5rem;
+  font-family: system-ui, -apple-system, sans-serif;
+  transform-origin: top right;
+  opacity: 0;
+  transform: scale(0.92) translateY(-8px);
+  pointer-events: none;
+  visibility: hidden;
+  transition: opacity 0.22s ease, transform 0.35s var(--ease-out), visibility 0s linear 0.35s;
+}
+.settings-panel.is-open {
+  opacity: 1;
+  transform: scale(1) translateY(0);
+  pointer-events: auto;
+  visibility: visible;
+  transition: opacity 0.22s ease, transform 0.35s var(--ease-out), visibility 0s;
+}
+
+.duration-field {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.4rem;
+  border-radius: 1rem;
+  background: rgba(0, 0, 0, 0.45);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+.duration-field:focus-within {
+  border-color: rgba(239, 68, 68, 0.7);
+  box-shadow: 0 0 0 4px rgba(216, 0, 0, 0.18);
+}
+.duration-field.is-invalid {
+  border-color: rgba(248, 113, 113, 0.8);
+}
+
+.duration-step {
+  flex: none;
+  width: 2.5rem;
+  height: 2.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.75rem;
+  color: #fff;
+  background: rgba(255, 255, 255, 0.07);
+}
+.duration-step:hover:not(:disabled) { background: rgba(216, 0, 0, 0.45); }
+.duration-step:disabled { opacity: 0.3; cursor: not-allowed; }
+
+.duration-input {
+  width: 100%;
+  min-width: 0;
+  background: transparent;
+  border: none;
+  outline: none;
+  text-align: right;
+  font-size: 2.25rem;
+  line-height: 1;
+  color: #fff;
+  letter-spacing: 0.06em;
+}
+
+.preset-chip {
+  padding: 0.35rem 0.8rem;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.75);
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+.preset-chip:hover { background: rgba(255, 255, 255, 0.12); }
+.preset-chip.is-active {
+  color: #fff;
+  background: rgba(216, 0, 0, 0.45);
+  border-color: rgba(239, 68, 68, 0.7);
+}
+
+.save-btn {
+  padding: 0.8rem;
+  border-radius: 999px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #fff;
+  background: linear-gradient(180deg, #e31212, #a30c0c);
+  box-shadow: 0 10px 30px rgba(216, 0, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.25);
+}
+.save-btn:hover:not(:disabled) { box-shadow: 0 12px 40px rgba(255, 20, 20, 0.7), inset 0 1px 0 rgba(255, 255, 255, 0.25); }
+.save-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+
+/* Main spin button */
+.spin-btn {
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.85rem;
+  padding: 0.9rem 2rem;
+  border-radius: 999px;
+  font-size: clamp(1.5rem, 3vw, 2.25rem);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #fff;
+  background: rgba(216, 0, 0, 0.4);
+  border: 2px solid rgba(239, 68, 68, 0.7);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  animation: spinIdleGlow 2.4s ease-in-out infinite;
+}
+.spin-btn:hover:not(:disabled) {
+  background: rgba(216, 0, 0, 0.6);
+  transform: translateY(-2px) scale(1.02);
+}
+.spin-btn.is-spinning {
+  cursor: not-allowed;
+  color: rgba(255, 255, 255, 0.35);
+  background: rgba(0, 0, 0, 0.5);
+  border-color: rgba(255, 255, 255, 0.1);
+  animation: none;
+  box-shadow: none;
+}
+
+@keyframes spinIdleGlow {
+  0%, 100% { box-shadow: 0 0 40px rgba(216, 0, 0, 0.6); }
+  50%      { box-shadow: 0 0 75px rgba(255, 20, 20, 0.95); }
+}
+
+/* Light sweep across the idle button */
+.spin-btn-shine {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(110deg, transparent 35%, rgba(255, 255, 255, 0.28) 50%, transparent 65%);
+  transform: translateX(-120%);
+  animation: shine 3.6s var(--ease-out) infinite;
+  pointer-events: none;
+}
+.spin-btn.is-spinning .spin-btn-shine { display: none; }
+
+@keyframes shine {
+  0%, 55% { transform: translateX(-120%); }
+  100%    { transform: translateX(120%); }
+}
+
+/* ───────────── Winner modal ───────────── */
+
+.winner-backdrop {
+  background: rgba(0, 0, 0, 0.9);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  animation: fadeIn 0.35s ease both;
+}
+.winner-backdrop.is-leaving {
+  animation: fadeOut 0.26s ease both;
+}
+
+.winner-ticket {
+  box-shadow: 0 0 120px rgba(216, 0, 0, 0.65);
+  animation: winnerPop 0.7s var(--ease-spring) both;
+}
+.is-leaving .winner-ticket {
+  animation: winnerOut 0.26s ease-in both;
+}
+
+.winner-number {
+  display: inline-block;
+  filter: drop-shadow(0 2px 10px rgba(0, 0, 0, 0.4));
+  animation: numberReveal 0.9s var(--ease-out) 0.25s both;
+}
+
+.spin-again {
+  animation: fadeUp 0.5s var(--ease-out) 0.5s both;
+}
+
+@keyframes fadeIn  { from { opacity: 0; } to { opacity: 1; } }
+@keyframes fadeOut { from { opacity: 1; } to { opacity: 0; } }
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
 
 @keyframes winnerPop {
-  0% {
-    transform: scale(0.7) translateY(20px);
-    opacity: 0;
-  }
-  60% {
-    transform: scale(1.04) translateY(-3px);
-  }
-  100% {
-    transform: scale(1) translateY(0);
-    opacity: 1;
-  }
+  0%   { transform: scale(0.7) translateY(30px) rotate(-1.5deg); opacity: 0; }
+  60%  { transform: scale(1.03) translateY(-4px) rotate(0.3deg); opacity: 1; }
+  100% { transform: scale(1) translateY(0) rotate(0); opacity: 1; }
 }
 
-.animate-winner {
-  animation: winnerPop 0.5s cubic-bezier(0.18, 0.89, 0.32, 1.28) forwards;
+@keyframes winnerOut {
+  to { transform: scale(0.92) translateY(16px); opacity: 0; }
+}
+
+@keyframes numberReveal {
+  0%   { opacity: 0; transform: scale(1.8); filter: blur(12px); }
+  100% { opacity: 1; transform: scale(1); filter: blur(0) drop-shadow(0 2px 10px rgba(0, 0, 0, 0.4)); }
+}
+
+/* Short screens (laptops, 768px tall): keep the stage below the poster title */
+@media (max-height: 820px) {
+  .live-readout { padding: 0.2rem 1rem 0.3rem; }
+  .live-readout-value { font-size: 1.6rem; }
+  .spin-btn { padding: 0.55rem 1.5rem; font-size: 1.4rem; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .poster-bg,
+  .spin-btn,
+  .spin-btn-shine,
+  .stage-enter {
+    animation: none;
+  }
 }

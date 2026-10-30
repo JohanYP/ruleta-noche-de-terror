@@ -1,21 +1,22 @@
+import { MAX_NUMBER, MIN_NUMBER, NUMBER_DIGITS } from '../config/roulette';
+
 export interface RouletteCard {
-  id: string;
   number: number;
   formatted: string;
-  rarity: 'common' | 'rare' | 'epic' | 'legendary';
 }
 
 export function formatNum(n: number): string {
-  return n.toString().padStart(4, '0');
-}
-
-export function getRarity(n: number): 'common' | 'rare' | 'epic' | 'legendary' {
-  if (n % 100 === 0 || n === 666 || n === 1000 || n === 2000) return 'legendary';
-  if (n % 25 === 0) return 'epic';
-  if (n % 5 === 0) return 'rare';
-  return 'common';
+  return n.toString().padStart(NUMBER_DIGITS, '0');
 }
 
 export function getRandomInt(min: number, max: number): number {
   return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+export function randomTicketNumber(): number {
+  return getRandomInt(MIN_NUMBER, MAX_NUMBER);
+}
+
+export function clamp(value: number, min: number, max: number): number {
+  return Math.min(max, Math.max(min, value));
 }
