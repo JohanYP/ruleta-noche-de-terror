@@ -36,20 +36,18 @@ body {
 
 /* ───────────── Background ───────────── */
 
-.app-backdrop {
-  background:
-    radial-gradient(ellipse 60% 50% at 50% 65%, rgba(110, 0, 0, 0.22), transparent 70%),
-    #060607;
+.poster-backdrop {
+  filter: blur(40px) brightness(0.4) saturate(1.2);
+  transform: scale(1.15);
 }
 
-/* Soft shadow so the poster sits cleanly on the dark backdrop */
+/* Soft edge so the sharp stage blends into the blurred letterbox bars */
 .layout-stage .stage {
-  box-shadow: 0 0 80px 10px rgba(0, 0, 0, 0.8);
+  box-shadow: 0 0 120px 40px rgba(0, 0, 0, 0.65);
 }
 
-/* Portrait: whole poster on top, separated from the roulette area by a shadow */
-.poster-fluid {
-  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.75);
+.poster-fade {
+  background: linear-gradient(to top, rgba(6, 6, 7, 0.55), transparent);
 }
 
 .tension-overlay {

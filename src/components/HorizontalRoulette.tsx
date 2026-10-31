@@ -129,17 +129,8 @@ export const HorizontalRoulette = forwardRef<RouletteHandle, RouletteProps>(({
   };
 
   // Re-layout the pool whenever its size or the card size changes
-  // At rest, park the current ticket exactly under the needle (also after resizes)
-  const centerIdle = () => {
-    if (spinningRef.current) return;
-    const { width, gap } = metricsRef.current;
-    const containerWidth = containerRef.current?.clientWidth ?? 0;
-    scrollRef.current = (lastCenterRef.current ?? 0) + (width / 2 - containerWidth / 2) / (width + gap);
-  };
-
   useLayoutEffect(() => {
     slotRefs.current.forEach((el) => el && delete el.dataset.idx);
-    centerIdle();
     const center = render();
     if (lastCenterRef.current === null) updateReadout(center, 0, false);
     lastCenterRef.current = center;
@@ -151,10 +142,7 @@ export const HorizontalRoulette = forwardRef<RouletteHandle, RouletteProps>(({
     const observer = new ResizeObserver(() => {
       const step = metricsRef.current.width + metricsRef.current.gap;
       setSlotCount(Math.ceil(container.clientWidth / step) + SLOT_BUFFER);
-      if (!spinningRef.current) {
-        centerIdle();
-        render();
-      }
+      if (!spinningRef.current) render();
     });
     observer.observe(container);
     return () => observer.disconnect();
