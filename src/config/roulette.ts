@@ -30,3 +30,14 @@ export const CARD_METRICS: Record<'regular' | 'compact', CardMetrics> = {
   regular: { width: 170, height: 176, gap: 16, padY: 56 },
   compact: { width: 128, height: 136, gap: 12, padY: 36 }
 };
+
+// Fixed design canvas. On landscape screens the whole scene is laid out at this size
+// and zoomed to fit, so the poster is never cropped on any screen size (LED walls, 4K, projectors).
+export const STAGE_WIDTH = 1920;
+export const STAGE_HEIGHT = 1080;
+// Narrower than this (portrait phones) falls back to the fluid layout
+export const STAGE_MIN_ASPECT = 1.2;
+
+export function isStageViewport(width: number, height: number): boolean {
+  return width / height >= STAGE_MIN_ASPECT;
+}

@@ -36,15 +36,14 @@ body {
 
 /* ───────────── Background ───────────── */
 
-.poster-bg {
-  animation: posterBreath 26s ease-in-out infinite alternate;
-  transform-origin: 50% 35%;
-  will-change: transform;
+.poster-backdrop {
+  filter: blur(40px) brightness(0.4) saturate(1.2);
+  transform: scale(1.15);
 }
 
-@keyframes posterBreath {
-  from { transform: scale(1); }
-  to   { transform: scale(1.045); }
+/* Soft edge so the sharp stage blends into the blurred letterbox bars */
+.layout-stage .stage {
+  box-shadow: 0 0 120px 40px rgba(0, 0, 0, 0.65);
 }
 
 .poster-fade {
@@ -491,7 +490,14 @@ body {
   animation: fadeOut 0.26s ease both;
 }
 
+.winner-wrap {
+  /* Biggest 16:9 ticket that fits the viewport with room for the button below */
+  width: min(92vw, calc((100svh - 12vh - 4rem) * 16 / 9));
+  gap: 2.5vh;
+}
+
 .winner-ticket {
+  container-type: inline-size;
   box-shadow: 0 0 120px rgba(216, 0, 0, 0.65);
   animation: winnerPop 0.7s var(--ease-spring) both;
 }
@@ -501,11 +507,24 @@ body {
 
 .winner-number {
   display: inline-block;
+  font-size: 11cqw;
   filter: drop-shadow(0 2px 10px rgba(0, 0, 0, 0.4));
   animation: numberReveal 0.9s var(--ease-out) 0.25s both;
 }
 
+.winner-close {
+  top: 2.5%;
+  right: 1.8%;
+  width: clamp(2.5rem, 4.5cqw, 5rem);
+  height: clamp(2.5rem, 4.5cqw, 5rem);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 .spin-again {
+  width: clamp(4rem, 9vh, 9rem);
+  height: clamp(4rem, 9vh, 9rem);
   animation: fadeUp 0.5s var(--ease-out) 0.5s both;
 }
 
@@ -532,15 +551,22 @@ body {
   100% { opacity: 1; transform: scale(1); filter: blur(0) drop-shadow(0 2px 10px rgba(0, 0, 0, 0.4)); }
 }
 
-/* Short screens (laptops, 768px tall): keep the stage below the poster title */
+/* Roulette width: 60% of the 1920px stage, full width in the fluid (portrait) layout */
+.layout-stage .roulette-frame { max-width: 1150px; }
+.layout-fluid .roulette-frame { max-width: 72rem; }
+
+/* Inside the stage everything has fixed design sizes (the stage zoom does the scaling) */
+.layout-stage .live-readout-value { font-size: 2.9rem; }
+.layout-stage .spin-btn { font-size: 2.25rem; }
+
+/* Short portrait/fluid screens: keep the roulette compact */
 @media (max-height: 820px) {
-  .live-readout { padding: 0.2rem 1rem 0.3rem; }
-  .live-readout-value { font-size: 1.6rem; }
-  .spin-btn { padding: 0.55rem 1.5rem; font-size: 1.4rem; }
+  .layout-fluid .live-readout { padding: 0.2rem 1rem 0.3rem; }
+  .layout-fluid .live-readout-value { font-size: 1.6rem; }
+  .layout-fluid .spin-btn { padding: 0.55rem 1.5rem; font-size: 1.4rem; }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .poster-bg,
   .spin-btn,
   .spin-btn-shine,
   .stage-enter {

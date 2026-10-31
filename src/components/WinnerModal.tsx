@@ -34,7 +34,7 @@ export const WinnerModal: FC<WinnerModalProps> = ({ winner, onClose, onSpinAgain
       aria-modal="true"
       aria-label={`Número ganador ${winner.formatted}`}
     >
-      <div className="relative w-full max-w-4xl sm:max-w-5xl md:max-w-6xl flex flex-col items-center gap-4 sm:gap-6 my-auto">
+      <div className="winner-wrap relative flex flex-col items-center my-auto">
         <div className="winner-ticket relative w-full aspect-[16/9] rounded-3xl overflow-hidden border border-red-600/40 select-none">
           <img
             src={ticketBgUrl}
@@ -44,18 +44,18 @@ export const WinnerModal: FC<WinnerModalProps> = ({ winner, onClose, onSpinAgain
 
           {/* Winner number positioned inside the white ticket cutout */}
           <div className="absolute top-[64%] left-[49%] -translate-x-1/2 -translate-y-1/2 w-[52%] h-[32%] flex items-center justify-center pointer-events-none">
-            <span className="winner-number font-scary font-black text-6xl sm:text-8xl md:text-9xl tracking-wider text-[#0a0a0c] leading-none">
+            <span className="winner-number font-scary font-black tracking-wider text-[#0a0a0c] leading-none">
               {winner.formatted}
             </span>
           </div>
 
           <button
             onClick={() => leave(onClose)}
-            className="ios-press absolute top-3 right-3 sm:top-6 sm:right-6 p-2.5 rounded-full bg-black/70 text-white hover:bg-black/90 border border-white/20 z-20 shadow-lg"
+            className="winner-close ios-press absolute rounded-full bg-black/70 text-white hover:bg-black/90 border border-white/20 z-20 shadow-lg"
             aria-label="Cerrar"
             title="Cerrar"
           >
-            <X className="w-5 h-5 sm:w-6 sm:h-6" />
+            <X className="w-1/2 h-1/2" />
           </button>
         </div>
 
@@ -63,9 +63,9 @@ export const WinnerModal: FC<WinnerModalProps> = ({ winner, onClose, onSpinAgain
           onClick={() => leave(onSpinAgain)}
           title="Girar de nuevo"
           aria-label="Girar de nuevo"
-          className="spin-again glass-btn ios-press w-16 h-16 sm:w-20 sm:h-20"
+          className="spin-again glass-btn ios-press"
         >
-          <RotateCcw className="w-8 h-8 sm:w-10 sm:h-10 stroke-[2.4]" />
+          <RotateCcw className="w-1/2 h-1/2 stroke-[2.4]" />
         </button>
       </div>
     </div>

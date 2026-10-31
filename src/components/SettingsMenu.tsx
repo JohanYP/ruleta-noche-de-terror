@@ -7,9 +7,10 @@ interface SettingsMenuProps {
   duration: number;
   onChange: (seconds: number) => void;
   disabled?: boolean;
+  zoom?: number;
 }
 
-export function SettingsMenu({ duration, onChange, disabled }: SettingsMenuProps) {
+export function SettingsMenu({ duration, onChange, disabled, zoom = 1 }: SettingsMenuProps) {
   const [open, setOpen] = useState(false);
   const [draft, setDraft] = useState(String(duration));
   const rootRef = useRef<HTMLDivElement>(null);
@@ -52,7 +53,7 @@ export function SettingsMenu({ duration, onChange, disabled }: SettingsMenuProps
   };
 
   return (
-    <div ref={rootRef} className="fixed top-3 right-3 sm:top-5 sm:right-5 z-40">
+    <div ref={rootRef} className="fixed top-3 right-3 sm:top-5 sm:right-5 z-40" style={{ zoom }}>
       <button
         type="button"
         onClick={() => setOpen((o) => !o)}

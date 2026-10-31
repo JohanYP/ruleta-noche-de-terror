@@ -1,12 +1,15 @@
 import { useEffect, useState } from 'react';
-import { CARD_METRICS, CardMetrics } from '../config/roulette';
+import { CARD_METRICS, CardMetrics, isStageViewport } from '../config/roulette';
 
 function pick(): CardMetrics {
   if (typeof window === 'undefined') return CARD_METRICS.regular;
-  return window.innerWidth < 640 || window.innerHeight < 820 ? CARD_METRICS.compact : CARD_METRICS.regular;
+  const { innerWidth: w, innerHeight: h } = window;
+  // The zoomed stage is always 1920×1080, so it always uses regular cards
+  if (isStageViewport(w, h)) return CARD_METRICS.regular;
+  return w < 640 || h < 820 ? CARD_METRICS.compact : CARD_METRICS.regular;
 }
 
-/** Tamaño de tarjeta según la pantalla: compacto en móviles y laptops bajas */
+/** Tamaño de tarjeta: regular en el escenario, compacto en móviles verticales */
 export function useCardMetrics(): CardMetrics {
   const [metrics, setMetrics] = useState(pick);
 
