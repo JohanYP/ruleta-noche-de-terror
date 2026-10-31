@@ -4,7 +4,7 @@ import { PosterArt, PosterBackdrop } from './components/PosterBackground';
 import { SettingsMenu } from './components/SettingsMenu';
 import { SpinButton } from './components/SpinButton';
 import { WinnerModal } from './components/WinnerModal';
-import { STAGE_HEIGHT, STAGE_WIDTH } from './config/roulette';
+import { STAGE_WIDTH } from './config/roulette';
 import { useSpinDuration } from './hooks/useSpinDuration';
 import { useStageLayout } from './hooks/useStageLayout';
 import { fireWinnerConfetti } from './utils/confetti';
@@ -36,9 +36,9 @@ export default function App() {
     fireWinnerConfetti(uiZoom);
   };
 
-  // Stage: the scene is laid out at 1920×1080 and zoomed to fit, so nothing is ever cropped
+  // Stage: the UI is laid out at 1920px wide and zoomed to fit, spanning the full screen height
   const stageStyle: CSSProperties = isStage
-    ? { width: STAGE_WIDTH, height: STAGE_HEIGHT, zoom: layout.scale }
+    ? { width: STAGE_WIDTH, height: layout.stageHeight, zoom: layout.scale }
     : { width: '100%', minHeight: '100svh' };
 
   return (
@@ -47,12 +47,12 @@ export default function App() {
         isStage ? 'h-[100svh] overflow-hidden flex items-center justify-center' : 'min-h-[100svh]'
       }`}
     >
-      <PosterBackdrop />
+      <PosterBackdrop stage={isStage} />
 
       <SettingsMenu duration={duration} onChange={setDuration} disabled={spinning} zoom={uiZoom} />
 
       <div className="stage relative z-10 flex flex-col overflow-hidden" style={stageStyle}>
-        <PosterArt stage={isStage} />
+        {!isStage && <PosterArt />}
 
         {/* Roulette sits in the dark lower area of the poster, below the title */}
         <main className={`stage-enter relative z-10 ${isStage ? 'mt-auto' : 'my-auto pt-6'} w-full mx-auto px-2 sm:px-6 flex flex-col items-center gap-3 sm:gap-5 pb-[max(1.25rem,env(safe-area-inset-bottom))] sm:pb-8`}>
