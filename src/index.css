@@ -41,6 +41,11 @@ body {
   transform: scale(1.15);
 }
 
+/* Soft edge so the sharp stage blends into the blurred letterbox bars */
+.layout-stage .stage {
+  box-shadow: 0 0 120px 40px rgba(0, 0, 0, 0.65);
+}
+
 .poster-fade {
   background: linear-gradient(to top, rgba(6, 6, 7, 0.55), transparent);
 }
