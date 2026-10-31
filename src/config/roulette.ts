@@ -9,9 +9,8 @@ export const DEFAULT_DURATION_S = 20;
 export const DURATION_PRESETS_S = [15, 20, 30, 60];
 export const DURATION_STORAGE_KEY = 'ruleta-terror:duration-s';
 
-// Velocidad de crucero: tarjetas por segundo en la fase rápida.
-// Lo bastante lento para que el público alcance a leer cada número.
-export const CRUISE_CARDS_PER_SECOND = 9;
+// Velocidad de crucero: tarjetas por segundo en la fase rápida del inicio.
+export const CRUISE_CARDS_PER_SECOND = 22;
 // Potencia de la frenada final: más alta = arrastre final más largo.
 export const DECEL_POWER = 3;
 

@@ -19,7 +19,7 @@ export interface SpinProfile {
 }
 
 function phases(durationS: number) {
-  const accel = clamp(durationS * 0.12, 1.2, 3);
+  const accel = clamp(durationS * 0.06, 0.6, 1.2);
   const decel = clamp(durationS * 0.5, 5, 13);
   const cruise = Math.max(0, durationS - accel - decel);
   return { accel, cruise, decel };
